@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown2Image</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌐</text></svg>" type="image/svg+xml">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked@4.2.12/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
@@ -16,12 +17,16 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.10.0/dist/html-to-image.min.js"></script>
     <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
         .bg-stripe-gradient {
             background: linear-gradient(150deg, #f6f9fc 15%, #eef2ff 70%, #ecfdf5 94%);
         }
 
         .stripe-shadow {
-            box-shadow: 0px 1px 4px rgba(26, 31, 54, 0.1);
+            box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         .stripe-input {
@@ -34,15 +39,16 @@
         }
 
         .stripe-button {
-            background: #6772e5;
-            transition: all 0.2s ease;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            background: #4f46e5; /* Updated color */
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 8px; /* Rounded corners */
         }
 
         .stripe-button:hover {
-            background: #5469d4;
+            background: #4338ca; /* Darker shade on hover */
             transform: translateY(-1px);
-            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
         #output {
@@ -69,14 +75,22 @@
             color: #6b7280; /* Tailwind's text-gray-500 */
             margin-top: 0.5rem; /* Tailwind's mt-2 */
         }
+
+        h1, h2 {
+            color: #1a1f36; /* Consistent heading color */
+        }
+
+        .markdown-body {
+            border-radius: 8px; /* Rounded corners for output */
+        }
     </style>
 </head>
 <body class="bg-stripe-gradient min-h-screen">
     <div class="container mx-auto p-4 py-12">
-        <h1 class="text-4xl font-semibold text-center text-[#1a1f36] mb-12 tracking-tight">
+        <h1 class="text-4xl font-semibold text-center mb-12 tracking-tight">
             Markdown2Image
-            <span class="block text-lg font-normal text-[#4f566b] mt-2">
-                Convert your markdown to beautiful images
+            <span class="block text-lg font-normal mt-2">
+                Experience the power of <span class="text-indigo-600">Live Preview</span> and <span class="text-indigo-600">Flexible Resizing</span> to effortlessly craft stunning images from your markdown.
             </span>
         </h1>
         
@@ -84,18 +98,18 @@
             <!-- Left Column - Editor -->
             <div class="bg-white rounded-xl stripe-shadow p-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-semibold text-[#1a1f36]">Editor</h2>
+                    <h2 class="text-xl font-semibold">Editor</h2>
                 </div>
                 <textarea 
                     id="markdownInput" 
-                    class="w-full h-[calc(100vh-300px)] p-4 border border-gray-200 rounded-lg stripe-input resize-none text-[#1a1f36]"
+                    class="w-full h-[calc(100vh-300px)] p-4 border border-gray-200 rounded-lg resize-none"
                     placeholder="Enter your markdown here..."></textarea>
             </div>
 
             <!-- Right Column - Preview -->
             <div class="bg-white rounded-xl stripe-shadow p-6">
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-xl font-semibold text-[#1a1f36]">Preview</h2>
+                    <h2 class="text-xl font-semibold">Preview</h2>
                     <div class="flex items-center">
                         <select id="fontSelector" class="mr-4 p-2 border border-gray-200 rounded-lg">
                             <option value="Arial">Arial</option>
@@ -110,18 +124,22 @@
                     </div>
                 </div>
                 <div id="output" 
-                     class="markdown-body h-[calc(100vh-300px)] overflow-auto p-6 border border-gray-200 rounded-lg bg-white"></div>
-                <p class="resize-instruction">Resize by dragging here ↗</p>
+                     class="markdown-body h-[calc(100vh-300px)] overflow-auto p-6 border border-gray-200 bg-white"></div>
+                <p class="resize-instruction">Resize by dragging here 👆🏻</p>
             </div>
         </div>
     </div>
 
-    <div class="fixed bottom-6 right-6 flex flex-col gap-3">
-        <a href="mailto:waybaba2ww+github+markdown2image@gmail.com?subject=[github+markdown2image]Feedback" 
-           class="px-4 py-2 bg-white hover:bg-gray-50 text-[#4f566b] rounded-lg text-sm stripe-shadow transition-all hover:-translate-y-0.5">
-            Send Feedback
-        </a>
-    </div>
+    <!-- Footer -->
+    <footer class="bg-stripe-gradient py-4 mt-12 stripe-shadow">
+        <div class="container mx-auto text-center text-[#1a1f36]">
+            <p class="text-sm">© 2023 Markdown2Image. All rights reserved.</p>
+            <a href="mailto:waybaba2ww+github+markdown2image@gmail.com?subject=[github+markdown2image]Feedback" 
+               class="inline-block mt-2 px-4 py-2 bg-white hover:bg-gray-50 text-[#4f566b] rounded-lg text-sm font-medium transition-all hover:-translate-y-0.5">
+                Send Feedback
+            </a>
+        </div>
+    </footer>
 
     <script>
         const markdownInput = document.getElementById("markdownInput");
@@ -142,6 +160,13 @@ Write your markdown here and see it rendered instantly ✨
 * 🎨 Add some style
 
 > 💡 Convert to image with one click
+
+\`\`\`python
+def greet(name):
+    print(f"Hello, {name}!")
+
+greet("World")
+\`\`\`
 
 Happy writing! 🚀`;
 
