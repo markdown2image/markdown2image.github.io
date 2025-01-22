@@ -6,121 +6,186 @@
     <title>Markdown to Image</title>
     <script src="https://cdn.jsdelivr.net/npm/marked@4.2.12/marked.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.1.0/github-markdown-light.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.10.0/dist/html-to-image.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(120deg, #6a11cb 0%, #2575fc 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+        .bg-stripe-gradient {
+            background: linear-gradient(150deg, #f6f9fc 15%, #eef2ff 70%, #ecfdf5 94%);
         }
-        .container {
-            background: #ffffff;
-            border-radius: 10px;
-            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            max-width: 800px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
+
+        .stripe-shadow {
+            box-shadow: 0px 1px 4px rgba(26, 31, 54, 0.1);
         }
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #343a40;
-            font-weight: bold;
+
+        .stripe-input {
+            transition: box-shadow 0.2s ease, border-color 0.2s ease;
         }
-        textarea {
-            width: 100%;
-            height: 150px;
-            margin-bottom: 20px;
-            font-size: 16px;
-            padding: 10px;
-            box-sizing: border-box;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
+
+        .stripe-input:focus {
+            box-shadow: 0 0 0 1px #6772e5, 0 1px 4px rgba(103, 114, 229, 0.1);
+            border-color: #6772e5;
         }
+
+        .stripe-button {
+            background: #6772e5;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .stripe-button:hover {
+            background: #5469d4;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+
         #output {
-            border: 1px solid #dee2e6;
-            padding: 20px;
-            background-color: #ffffff;
-            border-radius: 5px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-            min-height: 150px;
-            overflow-x: auto;
-            display: none;
+            resize: both;
+            overflow: auto;
+            position: relative;
         }
-        button {
-            display: block;
-            margin: 10px auto;
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #ffffff;
-            transition: background-color 0.3s;
+
+        #output::after {
+            content: '';
+            position: absolute;
+            bottom: 8px;
+            right: 8px;
+            width: 16px;
+            height: 16px;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgdmlld0JveD0iMCAwIDE2IDE2Ij48cGF0aCBkPSJNMTUgMTVoLTV2LTFoNHYtNGgxdi01aDF2NnptLTQtNGgtMXYtM2gtM3YtMWg0em0tNCA0aC0xdjJoLTF2LTFoLTF2LTFoM3ptLTQtNGgtMXYtM2gtM3YtMWg0em0tNCA0aC0xdjJoLTF2LTFoLTF2LTFoM3ptLTQtNGgtMXYtM2gtM3YtMWg0eiIgZmlsbD0iI2NjYyIvPjwvc3ZnPg==') no-repeat center center;
+            background-size: contain;
+            cursor: nwse-resize;
         }
-        button:hover {
-            background-color: #0056b3;
-        }
-        .footer-buttons {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 5px;
-        }
-        .footer-buttons a {
-            color: #6c757d;
-            background: #f8f9fa;
-            border: 1px solid #dee2e6;
-            padding: 5px 10px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-size: 14px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .footer-buttons a:hover {
-            background: #e2e6ea;
-            color: #495057;
+
+        .resize-instruction {
+            text-align: right;
+            font-size: 0.875rem; /* Tailwind's text-sm */
+            color: #6b7280; /* Tailwind's text-gray-500 */
+            margin-top: 0.5rem; /* Tailwind's mt-2 */
         }
     </style>
 </head>
-<body>
-    <div class="container">
-        <h1 class="mb-4">Markdown to Image</h1>
+<body class="bg-stripe-gradient min-h-screen">
+    <div class="container mx-auto p-4 py-12">
+        <h1 class="text-4xl font-semibold text-center text-[#1a1f36] mb-12 tracking-tight">
+            Markdown to Image
+            <span class="block text-lg font-normal text-[#4f566b] mt-2">
+                Convert your markdown to beautiful images
+            </span>
+        </h1>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Left Column - Editor -->
+            <div class="bg-white rounded-xl stripe-shadow p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-[#1a1f36]">Editor</h2>
+                </div>
+                <textarea 
+                    id="markdownInput" 
+                    class="w-full h-[calc(100vh-300px)] p-4 border border-gray-200 rounded-lg stripe-input resize-none text-[#1a1f36]"
+                    placeholder="Enter your markdown here..."></textarea>
+            </div>
 
-        <textarea id="markdownInput" placeholder="Enter your Markdown text here..." class="form-control"></textarea>
-        <div id="output" class="mt-3"></div>
-        <button id="downloadImage" class="btn btn-primary">Download as Image</button>
+            <!-- Right Column - Preview -->
+            <div class="bg-white rounded-xl stripe-shadow p-6">
+                <div class="flex items-center justify-between mb-6">
+                    <h2 class="text-xl font-semibold text-[#1a1f36]">Preview</h2>
+                    <div class="flex items-center">
+                        <select id="fontSelector" class="mr-4 p-2 border border-gray-200 rounded-lg">
+                            <option value="Arial">Arial</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Courier New">Courier New</option>
+                        </select>
+                        <button id="downloadImage" 
+                                class="px-6 py-2 text-white rounded-lg text-sm font-medium stripe-button">
+                            Download Image
+                        </button>
+                    </div>
+                </div>
+                <div id="output" 
+                     class="markdown-body h-[calc(100vh-300px)] overflow-auto p-6 border border-gray-200 rounded-lg bg-white"></div>
+                <p class="resize-instruction">Resize by dragging here ↗</p>
+            </div>
+        </div>
     </div>
 
-    <div class="footer-buttons">
-        <a href="mailto:waybaba2ww+github+markdown2image@gmail.com?subject=[github+markdown2image]Feedback">Feedback</a>
-        <!-- <a href="mailto:waybaba2ww+github+markdown2image@gmail.com?subject=[github+markdown2image][Suggestion]">Suggestion</a> -->
+    <div class="fixed bottom-6 right-6 flex flex-col gap-3">
+        <a href="mailto:waybaba2ww+github+markdown2image@gmail.com?subject=[github+markdown2image]Feedback" 
+           class="px-4 py-2 bg-white hover:bg-gray-50 text-[#4f566b] rounded-lg text-sm stripe-shadow transition-all hover:-translate-y-0.5">
+            Send Feedback
+        </a>
     </div>
 
     <script>
         const markdownInput = document.getElementById("markdownInput");
         const output = document.getElementById("output");
         const downloadImageButton = document.getElementById("downloadImage");
+        const fontSelector = document.getElementById("fontSelector");
+        const resizeInstruction = document.querySelector(".resize-instruction");
 
-        // Render Markdown as HTML live preview
+        // Initial welcome content
+        const initialContent = `# 👋 Welcome to Markdown to Image!
+
+Write your markdown here and see it rendered instantly ✨
+
+## Quick formatting examples:
+**bold** *italic* \`code\`
+* 📝 Make lists
+* ✅ Create tasks
+* 🎨 Add some style
+
+> 💡 Convert to image with one click
+
+Happy writing! 🚀`;
+
+        // Set initial content and trigger render
+        markdownInput.value = initialContent;
+        output.style.display = "block"; // Make sure output is visible
+        output.innerHTML = marked.parse(initialContent); // Directly render initial content
+
+        // Configure marked with math and code highlighting
+        marked.setOptions({
+            highlight: function(code, lang) {
+                if (Prism.languages[lang]) {
+                    return Prism.highlight(code, Prism.languages[lang], lang);
+                }
+                return code;
+            },
+            breaks: true,
+            gfm: true
+        });
+
+        // Custom renderer for math expressions
+        const renderer = new marked.Renderer();
+        const originalText = renderer.text.bind(renderer);
+        renderer.text = (text) => {
+            let result = text;
+            // Inline math
+            result = result.replace(/\$([^\$]+)\$/g, (_, math) => {
+                try {
+                    return katex.renderToString(math);
+                } catch (err) {
+                    console.error('KaTeX error:', err);
+                    return math;
+                }
+            });
+            return originalText(result);
+        };
+
+        marked.setOptions({ renderer });
+
+        // Update the markdown preview function
         markdownInput.addEventListener("input", () => {
             const markdownText = markdownInput.value;
             if (markdownText.trim()) {
                 try {
-                    const htmlContent = marked.parse(markdownText); // Convert Markdown to HTML
+                    const htmlContent = marked.parse(markdownText);
                     output.innerHTML = htmlContent;
                     output.style.display = "block";
                 } catch (error) {
@@ -131,28 +196,79 @@
             }
         });
 
-        // Convert rendered HTML to image and download
+        // Change font based on selection
+        fontSelector.addEventListener("change", () => {
+            const selectedFont = fontSelector.value;
+            output.style.fontFamily = selectedFont;
+        });
+
+        // Hide resize instruction after first resize
+        let isResized = false;
+        output.addEventListener("mousedown", () => {
+            if (!isResized) {
+                const onMouseUp = () => {
+                    resizeInstruction.style.display = "none";
+                    isResized = true;
+                    document.removeEventListener("mouseup", onMouseUp);
+                };
+                document.addEventListener("mouseup", onMouseUp);
+            }
+        });
+
+        // Convert rendered HTML to image and download using html-to-image
         downloadImageButton.addEventListener("click", () => {
-            html2canvas(output).then(canvas => {
-                const link = document.createElement("a");
-                link.download = "markdown-converted.png";
-                link.href = canvas.toDataURL("image/png");
-                link.click();
-            });
+            // Create a temporary div for capturing
+            const tempDiv = document.createElement('div');
+            tempDiv.className = 'markdown-body';
+            tempDiv.style.padding = '45px';
+            tempDiv.style.background = 'white';
+            tempDiv.style.width = `${output.offsetWidth}px`; // Use current width
+            tempDiv.style.height = `${output.offsetHeight}px`; // Use current height
+            tempDiv.style.fontFamily = output.style.fontFamily; // Apply selected font
+            tempDiv.innerHTML = output.innerHTML;
+
+            // Copy additional styles from the output
+            const outputStyles = window.getComputedStyle(output);
+            tempDiv.style.lineHeight = outputStyles.lineHeight;
+            tempDiv.style.color = outputStyles.color;
+            tempDiv.style.fontSize = outputStyles.fontSize;
+            tempDiv.style.fontWeight = outputStyles.fontWeight;
+            tempDiv.style.letterSpacing = outputStyles.letterSpacing;
+            tempDiv.style.textAlign = outputStyles.textAlign;
+            tempDiv.style.padding = outputStyles.padding;
+            tempDiv.style.margin = outputStyles.margin;
+            tempDiv.style.border = outputStyles.border;
+            tempDiv.style.boxShadow = outputStyles.boxShadow;
+            
+            // Temporarily add to document
+            document.body.appendChild(tempDiv);
+
+            // Use html-to-image to convert the div to an image with higher resolution
+            htmlToImage.toPng(tempDiv, { backgroundColor: 'white', pixelRatio: 2 }) // Set pixelRatio to 2 for higher resolution
+                .then((dataUrl) => {
+                    const link = document.createElement("a");
+                    link.download = "markdown-converted.png";
+                    link.href = dataUrl;
+                    link.click();
+                    
+                    // Clean up
+                    document.body.removeChild(tempDiv);
+                })
+                .catch((error) => {
+                    console.error('Error generating image:', error);
+                });
         });
     </script>
 
-    <!-- Google tag (gtag.js) -->
+    <!-- Google Analytics and Adsense scripts -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-1EWHHLB0YL"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
         function gtag() { dataLayer.push(arguments); }
         gtag('js', new Date());
-
         gtag('config', 'G-1EWHHLB0YL');
     </script>
-	<!-- Google Adsense -->
-	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4875743960121647"
-	crossorigin="anonymous"></script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4875743960121647"
+    crossorigin="anonymous"></script>
 </body>
 </html>
